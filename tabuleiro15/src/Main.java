@@ -8,8 +8,7 @@ import java.util.PriorityQueue;
 import java.util.Scanner;
 
 class Main {
-    public static void main(String args[]) {
-
+    public static void main(String[] args) {
         HashMap<Integer, No> abertos = new HashMap<>();
         
         PriorityQueue<No> fechados = new PriorityQueue<>();
@@ -20,7 +19,7 @@ class Main {
         
         for (int i = 0; i < 16; i++) matRaiz.add(scn.nextInt());
         
-        No raiz = new No(matRaiz, null, args[0]);
+        No raiz = new No(matRaiz, null);
         
         fechados.add(raiz);
         
@@ -28,9 +27,10 @@ class Main {
             No n = fechados.poll();
             if (!abertos.containsKey(n.vetor.hashCode())) { 
                 abertos.put(n.vetor.hashCode(), n);
-                n.sucessores(fechados, args[0]);
+                n.sucessores(fechados);
             }
         }
+       
     }
 
     private static class No implements Comparable<No>{
@@ -41,72 +41,39 @@ class Main {
         int nivel;
         float heuristica;
         
-        public No(List<Integer> vetor, No pai, String args) {
-            String heuris = args;
+        public No(List<Integer> vetor, No pai) {
             this.vetor = vetor;
             this.posVazio = this.vetor.indexOf(0);
             this.pai = pai;
             if (pai != null) {
                 this.nivel = this.pai.nivel + 1;     //Quantidade de movimentos realizados ou altura da arvore
             }
-            else this.nivel = 0;                     //Se pai for Vazio, entao seu nivel eh zerado
-            switch(heuris){
-                case "1":
-                    this.heuristica = h1() + this.nivel;
-                    if (this.heuristica - this.nivel == 0) { //Quando as heuristicas h1 h2 h3 h4 h5 retornam 0;
-                        System.out.print(this.nivel);
-                        System.exit(0);
-                    }
-                    break;
-                case "2":
-                    this.heuristica = h2() + this.nivel;
-                    if (this.heuristica - this.nivel == 0) { //Quando as heuristicas h1 h2 h3 h4 h5 retornam 0;
-                        System.out.print(this.nivel);
-                        System.exit(0);
-                    }
-                    break;
-                case "3":
-                    this.heuristica = h3() + this.nivel;
-                    if (this.heuristica - this.nivel == 0) { //Quando as heuristicas h1 h2 h3 h4 h5 retornam 0;
-                        System.out.print(this.nivel);
-                        System.exit(0);
-                    }
-                    break;
-                case "4":
-                    this.heuristica = h4() + this.nivel;
-                    if (this.heuristica - this.nivel == 0) { //Quando as heuristicas h1 h2 h3 h4 h5 retornam 0;
-                        System.out.print(this.nivel);
-                        System.exit(0);
-                    }
-                    break;
-                case "5":
-                    this.heuristica = h5() + this.nivel;
-                    if (this.heuristica - this.nivel == 0) { //Quando as heuristicas h1 h2 h3 h4 h5 retornam 0;
-                        System.out.print(this.nivel);
-                        System.exit(0);
-                    }
-                    break;
+            else this.nivel = 0;                     //Se pai for Vazio, entao seu nivel entao é zerado
+            this.heuristica = this.h3() + this.nivel;
+            if (this.heuristica - this.nivel == 0) { //Quando as heuristicas h1 h2 h3 h4 h5 retornam 0;
+                System.out.print(this.nivel);
+                System.exit(0);
             }
         }
 
-        private void sucessores(PriorityQueue<No> fechados, String args) {
+        private void sucessores(PriorityQueue<No> fechados) {
             int space = this.posVazio;
             
             if (space != 3 && space != 7 && space != 11 && space != 15) {// difertente da parede da direita entao posso mover para direita
-                fechados.add(new No(moveVazio(0, 1), this, args));
+		fechados.add(new No(moveVazio(0, 1), this));
             }
            if (space != 0 && space != 4 && space != 8 && space != 12) {// difertente da parede da esquerda entao posso mover para esquerda
-                fechados.add(new No(moveVazio(0, -1), this, args));
+                fechados.add(new No(moveVazio(0, -1), this));
             }
             if (space > 3) {// difente da parede de cima entao eu posso mover para cima 
-                fechados.add(new No(moveVazio(-1, 0), this, args));
+                fechados.add(new No(moveVazio(-1, 0), this));
             }
             if (space < 12) {// difente da parede de baixo entao eu posso mover para para baixo 
-                fechados.add(new No(moveVazio(1, 0), this, args));
+                fechados.add(new No(moveVazio(1, 0), this));
             }
-        }
-        
-        
+            
+        }        
+
         private int h1() {
             int count = 0;
             int p = 1;
